@@ -17,7 +17,7 @@ pipeline {
         stage('Versions') {
             steps {
 
-                copyArtifacts(projectName: 'OMERO-gradle-plugins-build', flatten: true, filter: 'version.properties')
+                copyArtifacts(projectName: 'OMERO-gradle-plugins-build', flatten: true, filter: 'version.properties', optional: true)
 
                 // build is in .gitignore so we can use it as a temp dir
                 sh """
@@ -27,7 +27,7 @@ pipeline {
                     cd ..
                     # Workaround for "unflattened" file, possibly due to matrix
                     find . -name version.properties -exec cp {} . \\;
-                    test -e version.properties
+                    test -e version.properties || touch version.properties
                     foreach-get-version-as-property >> version.properties
                 """
                 archiveArtifacts artifacts: 'version.properties'
